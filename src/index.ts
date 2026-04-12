@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { tips } from "./tips";
 
 const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;

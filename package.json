@@ -8,12 +8,21 @@
     "start": "npm run build && node dist/index.js",
     "dev": "ts-node src/index.ts"
   },
-  "keywords": ["discord", "shift-left", "qa", "testing", "bot"],
+  "keywords": [
+    "discord",
+    "shift-left",
+    "qa",
+    "testing",
+    "bot"
+  ],
   "author": "",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.0.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.0"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2"
   }
 }
