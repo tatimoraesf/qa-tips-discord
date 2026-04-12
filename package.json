@@ -1,0 +1,19 @@
+{
+  "name": "discord-shift-left-tips",
+  "version": "2.0.0",
+  "description": "Bot que envia dicas diárias de Shift-Left Testing no Discord via GitHub Actions",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "npm run build && node dist/index.js",
+    "dev": "ts-node src/index.ts"
+  },
+  "keywords": ["discord", "shift-left", "qa", "testing", "bot"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.0"
+  }
+}
