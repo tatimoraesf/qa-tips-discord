@@ -2,18 +2,26 @@ name: Shift-Left Daily Tip
 
 on:
   schedule:
-    # Roda de segunda a sexta às 09:00 (horário de Brasília = UTC-3, então 12:00 UTC)
     - cron: "0 12 * * 1-5"
-  workflow_dispatch: # Permite rodar manualmente pelo GitHub Actions
+  workflow_dispatch:
 
 jobs:
   send-tip:
     name: Enviar dica do dia no Discord
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout do repositório
         uses: actions/checkout@v4
+
+      - name: Download histórico de dicas
+        uses: actions/download-artifact@v4
+        with:
+          name: sent-tips
+          path: data/
+        continue-on-error: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -28,3 +36,9 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: npm start
+
+      - name: Salvar histórico das dicas
+        uses: actions/upload-artifact@v4
+        with:
+          name: sent-tips
+          path: data/sent-tips.json
