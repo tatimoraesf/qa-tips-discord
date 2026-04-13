@@ -9,17 +9,12 @@ jobs:
   send-tip:
     name: Enviar dica do dia no Discord
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout do repositório
         uses: actions/checkout@v4
-
-      - name: Download histórico de dicas
-        uses: actions/download-artifact@v4
-        with:
-          name: sent-tips
-          path: data/
-        continue-on-error: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -38,8 +33,10 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: npm start
 
-      - name: Salvar histórico das dicas
-        uses: actions/upload-artifact@v4
-        with:
-          name: sent-tips
-          path: data/sent-tips.json
+      - name: Salvar histórico no repositório
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/sent-tips.json
+          git diff --staged --quiet || git commit -m "chore: atualizar histórico de dicas [skip ci]"
+          git push
