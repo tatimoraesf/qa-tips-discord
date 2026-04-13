@@ -1,9 +1,9 @@
 import "dotenv/config";
-import { tips } from "./tips";
+import { tips, Tip } from "./tips";
 
 const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 
-function getTip(): string {
+function getTip(): Tip {
   return tips[0];
 }
 
@@ -16,9 +16,12 @@ async function sendTip(): Promise<void> {
 
   const payload = {
     embeds: [{
-      "title": "💡 Dica de Shift-Left",
-      "description": tip,
-      "color": 5763719
+      "title": tip.title,
+      "description": tip.description,
+      "color": 5763719,
+      "footer": {
+        "text": `Categoria: ${tip.category} | Nível: ${tip.level}`
+      }
     }]
   }
   const response = await fetch(DISCORD_WEBHOOK_URL, {
