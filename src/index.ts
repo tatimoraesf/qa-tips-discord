@@ -56,10 +56,21 @@ export async function sendWithRetry(payload: object, maxRetries: number = 3): Pr
 export function getTip(): Tip {
   const data = loadSentTips();
   const allIndices = tips.map((_, i) => i)
-  const remaining = allIndices.filter(i => !data.sentIndices.includes(i))
+  let remaining = allIndices.filter(i => !data.sentIndices.includes(i))
+
+  if (remaining.length === 0) {
+    console.log("🔄 Ciclo completo! Reiniciando...")
+    saveSentTips({ sentIndices: [] });
+    remaining = allIndices;
+  }
   const pick = remaining[Math.floor(Math.random() * remaining.length)]
 
   saveSentTips({ sentIndices: [...data.sentIndices, pick] })
+
+  console.log(`Dica enviada: ${pick}`)
+  console.log(`Total de dicas enviadas: ${data.sentIndices.length + 1}`)
+  console.log(`Total de dicas disponíveis: ${tips.length}`)
+  console.log(`Total de dicas restantes: ${remaining.length}`)
 
   return tips[pick];
 }
