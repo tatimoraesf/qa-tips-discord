@@ -9,8 +9,6 @@ jobs:
   send-tip:
     name: Enviar dica do dia no Discord
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
 
     steps:
       - name: Checkout do repositório
@@ -28,6 +26,9 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
+
+      - name: Criar pasta data
+        run: mkdir -p data
 
       - name: Instalar dependências
         run: npm ci
