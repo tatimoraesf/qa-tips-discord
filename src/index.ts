@@ -2,7 +2,6 @@ import "dotenv/config";
 import { tips, Tip } from "./tips";
 import fs from "fs";
 import path from "path";
-import sentTips from "../data/sent-tips.json";
 
 const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 const DATA_FILE = path.resolve(__dirname, "..", "data", "sent-tips.json");
