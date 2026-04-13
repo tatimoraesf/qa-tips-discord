@@ -9,7 +9,8 @@ const DATA_FILE = path.resolve(__dirname, "..", "data", "sent-tips.json");
 interface SentTipsData {
   sentIndices: number[];
 }
-function loadSentTips() {
+
+export function loadSentTips() {
   try {
     const data = fs.readFileSync(DATA_FILE, "utf-8");
     return JSON.parse(data);
@@ -19,7 +20,7 @@ function loadSentTips() {
   }
 }
 
-function saveSentTips(data: SentTipsData): void {
+export function saveSentTips(data: SentTipsData): void {
   try {
     fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
   } catch (error) {
@@ -27,8 +28,32 @@ function saveSentTips(data: SentTipsData): void {
   }
 }
 
+export async function sendWithRetry(payload: object, maxRetries: number = 3): Promise<void> {
+  if (!DISCORD_WEBHOOK_URL) {
+    throw new Error("DISCORD_WEBHOOK_URL não está definido");
+  }
+  try {
+    const response = await fetch(DISCORD_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) {
+      throw new Error(`Falha: ${response.statusText}`);
+    }
+  } catch (error) {
+    if (maxRetries > 0) {
+      console.log(`Tentando novamente... ${maxRetries} tentativas restantes`);
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      await sendWithRetry(payload, maxRetries - 1);
+    } else {
+      console.error("❌ Todas as tentativas falharam:", error);
+    }
+  }
+}
 
-function getTip(): Tip {
+
+export function getTip(): Tip {
   const data = loadSentTips();
   const allIndices = tips.map((_, i) => i)
   const remaining = allIndices.filter(i => !data.sentIndices.includes(i))
@@ -43,8 +68,6 @@ async function sendTip(): Promise<void> {
   if (!DISCORD_WEBHOOK_URL) {
     throw new Error("DISCORD_WEBHOOK_URL não está definido");
   }
-
-
 
   const tip = getTip();
 
@@ -64,7 +87,7 @@ async function sendTip(): Promise<void> {
     body: JSON.stringify(payload),
   });
   if (!response.ok) {
-    throw new Error(`Falha ao enviar mensagem: ${response.statusText}`);
+    await sendWithRetry(payload);
   }
 
 }
